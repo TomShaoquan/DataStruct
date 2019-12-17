@@ -1,174 +1,96 @@
-#include<iostream>
-#include<stdlib.h>
-#include<iomanip>
-#include<assert.h>
+#include"queue.h"
 
-using namespace std;
-
-#define MaxSize 1000
-
-typedef struct QNode	//ÈÎÎñ½ÚµãµÄ½á¹¹
+//åˆå§‹åŒ–é˜Ÿåˆ—
+void InitQueue(SeqQueue *SQ)
 {
-	int					id;					//Êı¾İ
-	void				(*handler)(void);		//Êı¾İ
-	struct QNode*		next;			//ºÍ×Ô¼ºÏàÍ¬ÀàĞÍµÄ½á¹¹
-}QNode;
-
-typedef QNode * QueuePtr;
-
-typedef struct Queue
-{
-	int			length;			//¶ÓÁĞ³¤¶È
-	QueuePtr	front;		//¶ÓÍ·Ö¸Õë
-	QueuePtr	rear;		//¶ÓÎ²Ö¸Õë
-}LinkQueue;
-
-
-QueuePtr thread_task_alloc()
-{
-	QNode* task;
-
-	task=(QNode* )calloc(1,sizeof(QNode));
-	if(task==NULL)
-		return NULL;
-	return task;
-}
-//³õÊ¼»¯¶ÓÁĞ
-void InitQueue(LinkQueue* LQ)
-{
-	if(!LQ) return ;
-	LQ->length=0;
-	LQ->front=LQ->rear=NULL;
+	SQ->front=SQ->rear=0;
 }
 
-//ÅĞ¶ÏÊÇ·ñÎª¿Õ
-int IsEmpty(LinkQueue* LQ)
+//åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦ä¸ºç©º
+int IsEmpty(SeqQueue *SQ)
 {
-	if(!LQ) return 0;
-	if(LQ->front==NULL)
+	if(SQ->front==SQ->rear)
 	{
 		return 1;
 	}
 	return 0;
 }
 
-int IsFull(LinkQueue* LQ)
+//åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦ä¸ºæ»¡
+int IsFull(SeqQueue *SQ)
 {
-	if(!LQ) return 0;
-	if(LQ->length==MaxSize)
+	if((SQ->rear+1)%MaxSize==SQ->front)
 	{
 		return 1;
 	}
 	return 0;
 }
 
-//Èë¶Ó
-int EnterQueue(LinkQueue* LQ,QNode* node)
+//å…¥é˜Ÿï¼Œå°†å…ƒç´ æ’å…¥é˜Ÿåˆ—ä¸­
+int EnterQueue(SeqQueue *SQ,DataType data)
 {
-	if(!LQ||!node) return 0;
-	if(IsFull(LQ))
+	if(IsFull(SQ))
 	{
-		cout<<"ÎŞ·¨²åÈëÔªËØ"<<node->id<<"¶ÓÁĞÒÑÂú"<<endl;
+		cout<<"é˜Ÿåˆ—å·²æ»¡"<<endl;
 		return 0;
 	}
-
-	node->next=NULL;
-
-	if(IsEmpty(LQ))		//¿Õ¶ÓÁĞ
-	{
-		LQ->front=LQ->rear=node;
-	}
-	else 
-	{
-		LQ->rear->next=node;	//ÔÚ¶ÓÁĞÎ²²¿²åÈë½Úµã
-		LQ->rear=node;			//¶ÓÎ²Ö¸ÏòĞÂ²åÈëµÄ½Úµã
-	}
-	LQ->length++;
+	SQ->queue[SQ->rear]=data;
+	SQ->rear=(SQ->rear+1)%MaxSize;	//é˜Ÿå°¾æŒ‡é’ˆå¾ªç¯åç§»ä¸€ä½
+	return 1;
 }
 
-//³ö¶Ó
-QNode* DeleteQueue(LinkQueue *LQ)
+
+//å‡ºåˆ—
+int DeleteQueue(SeqQueue *SQ,DataType *data)
 {
-	QNode* temp=NULL;
-	if(!LQ||IsEmpty(LQ)) 
+	if(!SQ||IsEmpty(SQ))
 	{
-		cout<<"¶ÓÁĞÎª¿Õ"<<endl;
+		cout<<"é˜Ÿåˆ—ä¸ºç©º"<<endl;
 		return 0;
 	}
-
-	temp=LQ->front;
-
-	LQ->front=temp->next;//Í·½ÚµãÖ¸ÏòºóÒ»Î»
-	if(!LQ->front) LQ->rear=NULL;  //¶ÔÍ·³öÁĞºó²»´æÔÚÆäËûÔªËØ
-
+	*data=SQ->queue[SQ->front];
+	SQ->front=(SQ->front+1)%MaxSize;
 	
-	LQ->length--;
-
-	return temp;
+	return 1;
 }
 
-void PrintQueue(LinkQueue* LQ)
+
+//æ‰“å°
+void PrintQueue(SeqQueue *SQ)
 {
-	QueuePtr tmp;
-	if(!LQ) return;
-	if(LQ->front->next==NULL)
+	if(!SQ) return ;
+	int i=SQ->front;
+	while(i!=SQ->rear)
 	{
-		cout<<"¶ÓÁĞÎª¿Õ"<<endl;
-		return;
-	}
-	tmp=LQ->front;
-	while(tmp)
-	{
-		cout<<setw(4)<<tmp->id;
-		tmp=tmp->next;
+		cout<<SQ->queue[i]<<"\t";
+		i=(i+1)%MaxSize;
 	}
 	cout<<endl;
 }
-
-int GetLength(LinkQueue* LQ)
+int  GetHead(SeqQueue *SQ,DataType *data)
 {
-	if(LQ) return 0;
-	return LQ->length;
-}
-
-void task1()
-{
-	cout<<"¶Ç×ÓºÃ¶öÅ¶£¡"<<endl;
-}
-void task2()
-{
-	cout<<"ÎÒÒª³Ô·¹ÁË"<<endl;
-}
-int main()
-{
-	LinkQueue* LQ=new LinkQueue;
-	QNode* task=NULL;
-
-	InitQueue(LQ);
-
-	//ÈÎÎñ1Èë¶Ó
-	task=thread_task_alloc();
-	task->id=1;
-	task->handler=&task1;
-	EnterQueue(LQ,task);
-
-	//ÈÎÎñ2Èë¶Ó
-	task=thread_task_alloc();
-	task->id=2;
-	task->handler=&task2;
-	EnterQueue(LQ,task);
-
-	cout<<"¶ÓÁĞÖĞµÄÔªËØ"<<GetLength(LQ)<<endl;
-	PrintQueue(LQ);
-	cout<<endl;
-	//Ö´ĞĞÈÎÎñ
-	while((task=DeleteQueue(LQ)))
+	
+	if(!SQ||IsEmpty(SQ))
 	{
-		task->handler();
-		delete task;
+		cout<<"é˜Ÿåˆ—ä¸ºç©º"<<endl;
 	}
-
-	delete LQ;
-	system("pause");
-	return 0;
+	return *data=SQ->queue[SQ->front];
 }
+
+ void ClearQueue(SeqQueue *SQ)
+ {
+	 if(!SQ) return ;
+	 SQ->front=SQ->rear=0;
+ }
+
+ int GetLength(SeqQueue *SQ)
+ {
+	 if(!SQ) return 0;
+	 return (SQ->rear-SQ->front+MaxSize)%MaxSize;
+ }
+
+ void desQueue(SeqQueue *SQ)
+ {
+
+ }
+ 

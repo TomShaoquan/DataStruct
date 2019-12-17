@@ -1,30 +1,35 @@
-#include"bintree.h"
 
-void test()
+#include"queue.h"
+
+int main()
 {
-    pTreeNode T;
-    InitTreeNode(&T);
+	SeqQueue *SQ=new SeqQueue;
+	DataType data;
+	InitQueue(SQ);
 
-    CreateBinTree(&T);  //创建一个二叉树
+	for(int j=0;j<7;j++)
+	{
+		EnterQueue(SQ,j+1);
+	}
+	PrintQueue(SQ);
+	for(int k=0;k<10;k++)
+	{
+		DeleteQueue(SQ,&data);
+		cout<<"出队元素："<<data<<endl;
+	}
+	GetHead(SQ,&data);
+	cout<<data<<endl;
+	PrintQueue(SQ);
+	cout<<"元素个数"<<GetLength(SQ)<<endl;
 
-    cout << "前序遍历:" << endl;
-    PreOrderPrint(T);    //前序遍历
-
-    cout << "\n中序遍历:" << endl;
-    MidOrderPrint(T);   //中序遍历
-
-    cout << "\n后序遍历:" << endl;
-    PostOrderPrint(T);   //后续遍历
-
-    cout << "\n层序遍历:" << endl;
-    FloorPrint(T);
-
-    cout << "\n层序遍历——Queue:" << endl;
-    FloorPrint_QUEUE(T);
-}
-
-int main(void)
-{
-    test();
-    return 0;
+	//入队
+	for(int j=0;j<4;j++)
+	{
+		EnterQueue(SQ,10+j);
+	}
+	PrintQueue(SQ);
+	ClearQueue(SQ);
+	delete SQ;
+	system("pause");
+	return 0;
 }
