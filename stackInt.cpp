@@ -5,12 +5,13 @@
 #define MaxSize 128
 
 typedef int ElemType;
-
-typedef struct SqStack{
-
-	ElemType* base;		//栈底指针
-	ElemType* top;		//栈顶指针
+//作业
+typedef struct SqStack
+{
+	int top;
+	ElemType *base;
 }SqStack;
+
 
 
 //初始化
@@ -19,15 +20,15 @@ bool initStack(SqStack &S)
 	S.base=new ElemType[MaxSize];
 	if(!S.base)
 		return false;
-	S.top=S.base;
+	S.top=0;
 	return true;
 }
 //入栈
 bool PushStack(SqStack &S,ElemType e)
 {
-	if(S.top-S.base==MaxSize)
+	if(S.top==MaxSize-1)
 		return false;
-	*S.top=e;
+	*(S.base+S.top)=e;
 	S.top++;
 	return true;
 }
@@ -35,19 +36,19 @@ bool PushStack(SqStack &S,ElemType e)
 //出栈  
 bool PopStack(SqStack &S,ElemType &e)	//删除的栈顶元素暂存在变量e中
 {
-	if(S.base==S.top)	//栈空
+	if(S.top==0)	//栈空
 	{
 		return false;
 	}
 	S.top--;
-	e=*S.top;
+	e=*(S.base+S.top);
 	return true;
 }
 
 bool GetTop(SqStack &S,ElemType &e)
 {
-	if(S.top!=S.base){
-		e=*(S.top-1);	//访问栈顶元素
+	if(S.top!=0){
+		e=*(S.base+S.top);	//访问栈顶元素
 		return true;
 	}else{
 		return false;
@@ -56,12 +57,12 @@ bool GetTop(SqStack &S,ElemType &e)
 
 int GetSize(SqStack &S)
 {
-	return S.top-S.base;
+	return S.top;
 }
 
 bool IsEmpty(SqStack &S)
 {
-	if(S.top==S.base){
+	if(S.top==0){
 		return true;
 	}else{
 
@@ -78,6 +79,7 @@ void DestroyStack(SqStack &S)
 	}
 }
 using namespace std;
+
 int main()
 {
 	
@@ -99,6 +101,7 @@ int main()
 	}
 
 	//元素出栈
+	cout<<"元素出栈："<<endl;
 	while(!IsEmpty(S))
 	{
 		PopStack(S,e);
